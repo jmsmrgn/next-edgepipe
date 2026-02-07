@@ -1,0 +1,17 @@
+{
+  "name": "next-edgepipe-monorepo",
+  "private": true,
+  "engines": {
+    "node": ">=20"
+  },
+  "devDependencies": {
+    "next": "16.1.6"
+  },
+  "scripts": {
+    "dev": "pnpm --filter demo dev",
+    "build:lib": "pnpm --filter next-edgepipe build",
+    "build:demo": "pnpm --filter demo build",
+    "test": "pnpm --filter next-edgepipe test",
+    "test:watch": "pnpm --filter next-edgepipe test:watch"
+  }
+}
