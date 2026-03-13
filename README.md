@@ -1,10 +1,9 @@
 # next-edgepipe
-
 ![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)
 
 Composable Edge Middleware for Next.js.
 
-> **Design philosophy:** Every architectural decision in this library has a specific justification — not preference. The adapter pattern exists for testability. ESM-only exists for runtime correctness. Mutable context exists for downstream communication without request mutation. The Architecture Decisions section documents the reasoning behind each choice.
+> **Design philosophy:** Every decision has a specific justification, not a preference. The adapter pattern exists for testability. ESM-only exists for runtime correctness. Mutable context exists so middleware layers can communicate downstream without touching the request. See Architecture Decisions.
 
 ## Installation
 
@@ -66,8 +65,6 @@ export const config = {
 ```
 
 ## Prior Art
-
-Two things exist that are worth acknowledging.
 
 The community `chainMiddleware` helper — documented in blog posts by 58bits, reacthustle, and others — solves basic sequencing. It does not provide typed shared context, has no adapter interfaces, and ships as copy-paste code rather than a versioned dependency.
 
