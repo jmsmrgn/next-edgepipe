@@ -11,7 +11,7 @@
     "dev": "pnpm --filter demo dev",
     "build:lib": "pnpm --filter next-edgepipe build",
     "build:demo": "pnpm --filter demo build",
-    "test": "pnpm --filter next-edgepipe test",
+    "test": "pnpm --filter next-edgepipe test && pnpm --filter demo test",
     "test:watch": "pnpm --filter next-edgepipe test:watch"
   }
 }
