@@ -107,17 +107,17 @@ export default function Page() {
         </section>
 
         {/* Results */}
-        {latest && (
+        {latest ? (
           <section className="space-y-3">
             <h2 className="text-xs font-semibold uppercase tracking-widest text-zinc-500">
               Last Response
             </h2>
             <ResultsPanel result={latest} />
           </section>
-        )}
+        ) : null}
 
         {/* Log */}
-        {log.length > 0 && <RequestLog entries={log} />}
+        {log.length > 0 ? <RequestLog entries={log} /> : null}
 
       </div>
     </div>
