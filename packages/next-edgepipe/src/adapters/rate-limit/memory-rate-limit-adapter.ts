@@ -9,6 +9,16 @@ const store = new Map<string, { count: number; reset: number }>();
  * limiting across nodes.
  */
 export class MemoryRateLimitAdapter implements RateLimitAdapter {
+  constructor() {
+    if (process.env.NODE_ENV === "production") {
+      console.warn(
+        "[next-edgepipe] MemoryRateLimitAdapter is not suitable for production. " +
+          "State resets on cold starts and is not shared across Edge Runtime instances. " +
+          "Use a Vercel KV or Redis-backed adapter instead."
+      );
+    }
+  }
+
   async increment(
     key: string,
     windowMs: number

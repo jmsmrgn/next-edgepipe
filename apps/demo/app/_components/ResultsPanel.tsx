@@ -8,6 +8,15 @@ interface TraceResult {
   durationMs: number;
 }
 
+function Kv({ label, value }: { label: string; value: string }) {
+  return (
+    <div>
+      <p className="text-xs text-zinc-500">{label}</p>
+      <p className="font-mono text-sm text-zinc-200 truncate">{value}</p>
+    </div>
+  );
+}
+
 export function ResultsPanel({ result }: { result: TraceResult }) {
   const limit = Number(result.rateLimit.limit ?? 10);
   const remaining = Number(result.rateLimit.remaining ?? limit);
@@ -51,15 +60,6 @@ export function ResultsPanel({ result }: { result: TraceResult }) {
       <p className="text-xs text-zinc-500">
         Response time: <span className="text-zinc-300">{result.durationMs}ms</span>
       </p>
-    </div>
-  );
-}
-
-function Kv({ label, value }: { label: string; value: string }) {
-  return (
-    <div>
-      <p className="text-xs text-zinc-500">{label}</p>
-      <p className="font-mono text-sm text-zinc-200 truncate">{value}</p>
     </div>
   );
 }
