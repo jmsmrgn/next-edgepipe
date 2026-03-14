@@ -1,9 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
+import dynamic from "next/dynamic";
 import { PipelineViz } from "./_components/PipelineViz";
-import { ResultsPanel } from "./_components/ResultsPanel";
-import { RequestLog, type LogEntry } from "./_components/RequestLog";
+import type { LogEntry } from "./_components/RequestLog";
+
+const ResultsPanel = dynamic(() =>
+  import("./_components/ResultsPanel").then((m) => ({ default: m.ResultsPanel }))
+);
+const RequestLog = dynamic(() =>
+  import("./_components/RequestLog").then((m) => ({ default: m.RequestLog }))
+);
 
 interface TraceResult {
   requestId: string;
@@ -26,7 +33,7 @@ async function fetchTrace(): Promise<{ result: TraceResult; status: number; dura
 export default function Page() {
   const [latest, setLatest] = useState<TraceResult | null>(null);
   const [log, setLog] = useState<LogEntry[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [isPending, startTransition] = useTransition();
 
   function appendLog(status: number, durationMs: number, timestamp: string) {
     setLog((prev) => [
@@ -35,29 +42,23 @@ export default function Page() {
     ]);
   }
 
-  async function runOnce() {
-    setLoading(true);
-    try {
+  function runOnce() {
+    startTransition(async () => {
       const { result, status, durationMs } = await fetchTrace();
       setLatest(result);
       appendLog(status, durationMs, result.timestamp);
-    } finally {
-      setLoading(false);
-    }
+    });
   }
 
-  async function stressTest() {
-    setLoading(true);
-    try {
+  function stressTest() {
+    startTransition(async () => {
       for (let i = 0; i < 15; i++) {
         const { result, status, durationMs } = await fetchTrace();
         setLatest(result);
         appendLog(status, durationMs, result.timestamp);
         if (i < 14) await new Promise((r) => setTimeout(r, 50));
       }
-    } finally {
-      setLoading(false);
-    }
+    });
   }
 
   return (
@@ -92,14 +93,14 @@ export default function Page() {
         <section className="flex gap-3">
           <button
             onClick={runOnce}
-            disabled={loading}
+            disabled={isPending}
             className="rounded bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-500 disabled:opacity-40 transition-colors"
           >
-            {loading ? "Running…" : "Run Pipeline"}
+            {isPending ? "Running…" : "Run Pipeline"}
           </button>
           <button
             onClick={stressTest}
-            disabled={loading}
+            disabled={isPending}
             className="rounded border border-zinc-700 px-4 py-2 text-sm font-semibold text-zinc-300 hover:border-zinc-500 hover:text-white disabled:opacity-40 transition-colors"
           >
             Stress Test (15 requests)
