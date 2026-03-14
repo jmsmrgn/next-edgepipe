@@ -33,6 +33,7 @@ async function fetchTrace(): Promise<{ result: TraceResult; status: number; dura
 export default function Page() {
   const [latest, setLatest] = useState<TraceResult | null>(null);
   const [log, setLog] = useState<LogEntry[]>([]);
+  const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
   function appendLog(status: number, durationMs: number, timestamp: string) {
@@ -43,20 +44,30 @@ export default function Page() {
   }
 
   function runOnce() {
+    setError(null);
     startTransition(async () => {
-      const { result, status, durationMs } = await fetchTrace();
-      setLatest(result);
-      appendLog(status, durationMs, result.timestamp);
+      try {
+        const { result, status, durationMs } = await fetchTrace();
+        setLatest(result);
+        appendLog(status, durationMs, result.timestamp);
+      } catch {
+        setError("Request failed. Check your connection and try again.");
+      }
     });
   }
 
   function stressTest() {
+    setError(null);
     startTransition(async () => {
-      for (let i = 0; i < 15; i++) {
-        const { result, status, durationMs } = await fetchTrace();
-        setLatest(result);
-        appendLog(status, durationMs, result.timestamp);
-        if (i < 14) await new Promise((r) => setTimeout(r, 50));
+      try {
+        for (let i = 0; i < 15; i++) {
+          const { result, status, durationMs } = await fetchTrace();
+          setLatest(result);
+          appendLog(status, durationMs, result.timestamp);
+          if (i < 14) await new Promise((r) => setTimeout(r, 50));
+        }
+      } catch {
+        setError("Stress test failed. Some requests may not have completed.");
       }
     });
   }
@@ -106,6 +117,11 @@ export default function Page() {
             Stress Test (15 requests)
           </button>
         </section>
+
+        {/* Error */}
+        {error ? (
+          <p className="text-sm text-red-400">{error}</p>
+        ) : null}
 
         {/* Results */}
         {latest ? (
